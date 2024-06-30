@@ -6,9 +6,9 @@ from spotipy.oauth2 import SpotifyOAuth # type: ignore
 
 scope = 'user-modify-playback-state user-read-playback-state'
 
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=st.secrets["client_id"],
-                                               client_secret=st.secrets["client_secret"],
-                                               redirect_uri='http://localhost:8080',
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=st.secrets.id,
+                                               client_secret=st.secrets.secret,
+                                               redirect_uri='https://spotipy.streamlit.app:8080/',
                                                scope=scope))
 
 def sync():
@@ -60,17 +60,11 @@ def info():
         duration_ms = current_playback["item"]["duration_ms"]
         playback_percent = (progress_ms / duration_ms) * 100
         title = current_playback["item"]["name"]
-        artist = current_playback["item"]["artists"][0]["name"]
         artists = [artist["name"] for artist in current_playback["item"]["artists"]]
         artist_names = ", ".join(artists)
         album = current_playback["item"]["album"]["name"]
-        
-        clear_console()
 
-        print(f"Title > {title}")
-        print(f"Artist > {artist_names}")
-        print(f"Album > {album}")
-        print(f"Playback > {playback_percent:.4f}%")
+        return title, artist_names, album, playback_percent
 
 def position():
     current_playback = sync()
@@ -114,3 +108,12 @@ def queue():
 # Streamlit
 
 st.title("Spotipy")
+st.write()
+
+while True:
+    title, artist_names, album, playback_percent = info()
+    print(f"Title: {title}")
+    print(f"Artist: {artist_names}")
+    print(f"Album: {album}")
+    print(f"Playback: {playback_percent}")
+    time.sleep(1)
